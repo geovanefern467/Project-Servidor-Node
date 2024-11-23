@@ -1,6 +1,12 @@
 import express from "express"; // Importa o framework Express para criar o servidor
 import multer from "multer"; // Importa o Multer para lidar com requisições multipart/form-data (envio de arquivos)
-import { listarPosts, postarNovoPost, uploadImagem } from "../controllers/postController.js"; // Importa funções do controlador de posts para lidar com a lógica de posts
+import { listarPosts, postarNovoPost, uploadImagem, atualizarNovoPost } from "../controllers/postController.js"; // Importa funções do controlador de posts para lidar com a lógica de posts
+import cors  from "cors";
+
+const corsOptions = {
+  origin: "http://localhost:8000",
+  optionsSuccessStatus: 200
+}
 
 // Configura o armazenamento do Multer para imagens enviadas
 const storage = multer.diskStorage({
@@ -17,6 +23,7 @@ const upload = multer({ dest: "./uploads", storage }); // Cria uma instância do
 const routes = (app) => {
   // Permite que o servidor interprete dados JSON no corpo das requisições
   app.use(express.json());
+  app.use(cors(corsOptions));
 
   // Rota GET para obter todos os posts (implementação em listarPosts)
   app.get("/posts", listarPosts);
@@ -26,6 +33,8 @@ const routes = (app) => {
 
   // Rota POST para fazer upload de imagens (implementação em uploadImagem)
   app.post("/upload", upload.single("imagem"), uploadImagem); // Use 'imagem' como chave para o arquivo enviado
+
+  app.put("/upload/:id", atualizarNovoPost)
 };
 
 export default routes; // Exporta a função de rotas para ser usada no arquivo principal do servidor
